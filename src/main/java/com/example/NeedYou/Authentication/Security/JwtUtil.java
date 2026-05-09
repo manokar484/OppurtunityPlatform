@@ -1,5 +1,7 @@
 package com.example.NeedYou.Authentication.Security;
 
+import com.example.NeedYou.Authentication.model.User;
+import com.example.NeedYou.Authentication.model.UserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
@@ -32,5 +34,28 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+    public boolean validateToken(
+            String token) {
+
+        return  !isTokenExpired(token);
+    }
+
+    // CHECK EXPIRATION
+    private boolean isTokenExpired(String token) {
+
+        return extractExpiration(token)
+                .before(new Date());
+    }
+
+    // EXTRACT EXPIRATION
+    private Date extractExpiration(String token) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
     }
 }
